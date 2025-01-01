@@ -6,7 +6,19 @@ interface LightroomSettingsProps {
 }
 
 export function LightroomSettings({ recipe }: LightroomSettingsProps) {
-  const profile = filmSimulationProfiles[recipe.filmSimulation];
+  const profile = filmSimulationProfiles[recipe.filmSimulation] || {
+    profile: 'Adobe Standard',
+    adjustments: {
+      temperature: 0,
+      tint: 0,
+      vibrance: 0,
+      saturation: 0,
+      contrast: 0,
+      highlights: 0,
+      shadows: 0
+    }
+  };
+
   const grain = recipe.grainEffect === 'Off' 
     ? { amount: 0, size: 25 } 
     : { 
@@ -74,7 +86,10 @@ export function LightroomSettings({ recipe }: LightroomSettingsProps) {
         <span className="text-neutral-400">Grain Size:</span>
         <span className="font-medium text-white">{grain.size}</span>
 
-        {(recipe.filmSimulation === 'ACROS' || recipe.filmSimulation === 'Monochrome') && (
+        {(recipe.filmSimulation === 'ACROS' || recipe.filmSimulation === 'Monochrome' || 
+          recipe.filmSimulation === 'Tri-X 400' || recipe.filmSimulation === 'T-Max 400' ||
+          recipe.filmSimulation === 'HP5 Plus' || recipe.filmSimulation === 'Delta 100' ||
+          recipe.filmSimulation === 'Pan F Plus 50' || recipe.filmSimulation === 'XP2 Super') && (
           <>
             <span className="text-neutral-400">Convert to B&W:</span>
             <span className="font-medium text-white">Yes</span>

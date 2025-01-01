@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
+import { Recipe } from '../types/Recipe';
+import { generateImageTransform } from '../utils/colorScience/imageTransform';
 
 interface HistogramProps {
   imageUrl: string;
+  recipe: Recipe;
   className?: string;
 }
 
-export function Histogram({ imageUrl, className = '' }: HistogramProps) {
+export function Histogram({ imageUrl, recipe, className = '' }: HistogramProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -28,6 +31,9 @@ export function Histogram({ imageUrl, className = '' }: HistogramProps) {
       // Set temp canvas size and draw image
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
+      
+      // Apply recipe filters
+      tempCtx.filter = generateImageTransform(recipe);
       tempCtx.drawImage(img, 0, 0);
 
       // Get image data
@@ -115,7 +121,7 @@ export function Histogram({ imageUrl, className = '' }: HistogramProps) {
       // Reset alpha
       ctx.globalAlpha = 1;
     };
-  }, [imageUrl]);
+  }, [imageUrl, recipe]); // Add recipe to dependencies
 
   return (
     <canvas

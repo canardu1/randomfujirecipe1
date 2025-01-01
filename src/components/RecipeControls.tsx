@@ -1,6 +1,8 @@
 import React from 'react';
 import { Recipe } from '../types/Recipe';
-import { filmSimulations, dynamicRanges, grainEffects, grainSizes, whiteBalances } from '../data/recipes';
+import { RefreshCw } from 'lucide-react';
+import { filmSimulations, dynamicRanges, grainEffects, grainSizes, whiteBalances, chromeEffects } from '../data/constants';
+import { filmSimulationMetadata } from '../types/FilmSimulation';
 
 interface RecipeControlsProps {
   recipe: Recipe;
@@ -22,8 +24,37 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
     });
   };
 
+  const handleReset = () => {
+    onChange({
+      ...recipe,
+      highlight: 0,
+      shadow: 0,
+      color: 0,
+      sharpness: 0,
+      noiseReduction: 0,
+      grainEffect: 'Off',
+      whiteBalanceShift: {
+        red: 0,
+        blue: 0
+      },
+      chromeEffect: 'Off'
+    });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Reset Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-neutral-700 text-neutral-300 hover:bg-neutral-600"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Reset Settings
+        </button>
+      </div>
+
+      {/* Film Simulation */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">Film Simulation</h3>
         <select
@@ -32,11 +63,14 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
           className="w-full bg-neutral-700 text-white border-neutral-600 rounded-md"
         >
           {filmSimulations.map((sim) => (
-            <option key={sim} value={sim}>{sim}</option>
+            <option key={sim} value={sim}>
+              {filmSimulationMetadata[sim]?.name || sim}
+            </option>
           ))}
         </select>
       </div>
 
+      {/* White Balance */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">White Balance</h3>
         <select
@@ -78,6 +112,7 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
         </div>
       </div>
 
+      {/* Dynamic Range */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">Dynamic Range</h3>
         <select
@@ -91,6 +126,7 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
         </select>
       </div>
 
+      {/* Tone */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">Tone</h3>
         <div className="space-y-2">
@@ -122,6 +158,7 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
         </div>
       </div>
 
+      {/* Color & Detail */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">Color & Detail</h3>
         <div className="space-y-2">
@@ -151,8 +188,23 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
             className="w-full"
           />
         </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm text-neutral-300">
+            Noise Reduction ({recipe.noiseReduction})
+          </label>
+          <input
+            type="range"
+            min="-4"
+            max="4"
+            value={recipe.noiseReduction}
+            onChange={(e) => handleChange('noiseReduction', parseInt(e.target.value))}
+            className="w-full"
+          />
+        </div>
       </div>
 
+      {/* Grain */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">Grain</h3>
         <select
@@ -176,6 +228,20 @@ export function RecipeControls({ recipe, onChange }: RecipeControlsProps) {
             ))}
           </select>
         )}
+      </div>
+
+      {/* Color Chrome Effect */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-white">Color Chrome Effect</h3>
+        <select
+          value={recipe.chromeEffect}
+          onChange={(e) => handleChange('chromeEffect', e.target.value)}
+          className="w-full bg-neutral-700 text-white border-neutral-600 rounded-md"
+        >
+          {chromeEffects.map((effect) => (
+            <option key={effect} value={effect}>{effect}</option>
+          ))}
+        </select>
       </div>
     </div>
   );

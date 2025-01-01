@@ -1,5 +1,3 @@
-import { BorderStyle } from './styles';
-
 export type FilmSimulation = 
   | 'Classic Neg'
   | 'Velvia'
@@ -33,7 +31,6 @@ export interface Recipe {
   };
   exposureCompensation: string;
   chromeEffect: ChromeEffect;
-  chromeBluePriority: boolean;
   aspectRatio: AspectRatio;
   border: BorderStyle;
 }

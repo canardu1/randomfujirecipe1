@@ -1,35 +1,32 @@
-import { Recipe, FilmSimulation, ChromeEffect, AspectRatio } from '../types/Recipe';
+import { Recipe } from '../types/Recipe';
 import { BorderStyle } from '../types/styles';
 import { generateRecipeName } from '../utils/nameGenerator';
+import {
+  filmSimulations,
+  dynamicRanges,
+  grainEffects,
+  grainSizes,
+  chromeEffects,
+  whiteBalances
+} from './constants';
 
-export const filmSimulations = [
-  'Classic Neg',
-  'Velvia',
-  'Classic Chrome',
-  'PROVIA/Standard',
-  'ASTIA/Soft',
-  'PRO Neg Hi',
-  'PRO Neg Std',
-  'Eterna',
-  'ACROS',
-  'Monochrome'
-] as const;
+export {
+  filmSimulations,
+  dynamicRanges,
+  grainEffects,
+  grainSizes,
+  chromeEffects,
+  whiteBalances
+};
 
-export const dynamicRanges = ['DR100', 'DR200', 'DR400'] as const;
-export const grainEffects = ['Off', 'Weak', 'Strong'] as const;
-export const grainSizes = ['Small', 'Large'] as const;
-export const chromeEffects: ChromeEffect[] = ['Off', 'Weak', 'Strong'];
-export const whiteBalances = ['Auto', 'Daylight', 'Shade', 'Cloudy', 'Tungsten', 'Fluorescent'] as const;
-export const aspectRatios: AspectRatio[] = ['Original', '3:2', '16:9', '1:1'];
+const randomFrom = <T>(array: readonly T[]): T => 
+  array[Math.floor(Math.random() * array.length)];
+
+const randomInt = (min: number, max: number): number => 
+  Math.floor(Math.random() * (max - min + 1)) + min;
 
 export const generateRandomRecipe = (): Recipe => {
-  const randomInt = (min: number, max: number) => 
-    Math.floor(Math.random() * (max - min + 1)) + min;
-  
-  const randomFrom = <T>(array: readonly T[]): T => 
-    array[Math.floor(Math.random() * array.length)];
-
-  const defaultBorder: BorderStyle = {
+  const defaultBorder = {
     enabled: false,
     color: '#ffffff',
     width: 20
@@ -54,6 +51,7 @@ export const generateRandomRecipe = (): Recipe => {
     exposureCompensation: `${randomInt(-3, 3)}/3 EV`,
     chromeEffect: randomFrom(chromeEffects),
     chromeBluePriority: Math.random() > 0.5,
+    chromeBlueEffect: randomFrom(chromeEffects),
     aspectRatio: 'Original',
     border: defaultBorder
   };

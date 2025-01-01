@@ -1,14 +1,18 @@
 import React, { useRef } from 'react';
-import { Camera, Download } from 'lucide-react';
+import { Camera, Download, Heart } from 'lucide-react';
 import { Recipe } from '../types/Recipe';
+import { WhiteBalanceIcon } from './icons/WhiteBalanceIcon';
 import html2canvas from 'html2canvas';
+import { useSavedRecipes } from '../hooks/useSavedRecipes';
 
 interface RecipeCardProps {
   recipe: Recipe;
+  userId?: string;
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe, userId }: RecipeCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const { isSaved, saveRecipe, removeRecipe } = useSavedRecipes(userId);
 
   const downloadCard = async () => {
     if (!cardRef.current) return;
@@ -24,6 +28,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     link.click();
   };
 
+  const handleSaveToggle = async () => {
+    if (isSaved(recipe)) {
+      await removeRecipe(recipe);
+    } else {
+      await saveRecipe(recipe);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div
@@ -31,12 +43,22 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         className="fuji-panel p-6 rounded-lg space-y-6"
       >
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-neutral-700 pb-4">
-          <Camera className="w-8 h-8 text-[#b87a4b]" />
-          <div>
-            <h2 className="text-xl font-bold text-white">{recipe.name}</h2>
-            <p className="text-sm text-neutral-400">Fujifilm Recipe</p>
+        <div className="flex items-center justify-between border-b border-neutral-700 pb-4">
+          <div className="flex items-center gap-3">
+            <Camera className="w-8 h-8 text-[#b87a4b]" />
+            <div>
+              <h2 className="text-xl font-bold text-white">{recipe.name}</h2>
+              <p className="text-sm text-neutral-400">Fujifilm Recipe</p>
+            </div>
           </div>
+          {userId && (
+            <button
+              onClick={handleSaveToggle}
+              className="text-neutral-400 hover:text-[#b87a4b] transition-colors"
+            >
+              <Heart className={`w-5 h-5 ${isSaved(recipe) ? 'fill-[#b87a4b] text-[#b87a4b]' : ''}`} />
+            </button>
+          )}
         </div>
 
         {/* Settings Stack */}
@@ -62,7 +84,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             <div className="bg-neutral-700/20 p-3 rounded-md space-y-2">
               <div className="flex justify-between">
                 <span className="text-neutral-300">White Balance</span>
-                <span className="text-white font-medium">{recipe.whiteBalance}</span>
+                <span className="text-white font-medium flex items-center gap-1">
+                  <WhiteBalanceIcon type={recipe.whiteBalance as any} className="w-4 h-4" />
+                  {recipe.whiteBalance}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-300">WB Shift Red</span>
@@ -103,6 +128,17 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                 <span className="text-white font-medium">{recipe.sharpness}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-neutral-300">Noise Reduction</span>
+                <span className="text-white font-medium">{recipe.noiseReduction}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Grain */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-neutral-400">Grain</h3>
+            <div className="bg-neutral-700/20 p-3 rounded-md space-y-2">
+              <div className="flex justify-between">
                 <span className="text-neutral-300">Grain Effect</span>
                 <span className="text-white font-medium">{recipe.grainEffect}</span>
               </div>
@@ -112,6 +148,21 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   <span className="text-white font-medium">{recipe.grainSize}</span>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Chrome Effects */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-neutral-400">Chrome Effects</h3>
+            <div className="bg-neutral-700/20 p-3 rounded-md space-y-2">
+              <div className="flex justify-between">
+                <span className="text-neutral-300">Color Chrome Effect</span>
+                <span className="text-white font-medium">{recipe.chromeEffect}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-neutral-300">Color Chrome Blue</span>
+                <span className="text-white font-medium">{recipe.chromeBlueEffect}</span>
+              </div>
             </div>
           </div>
         </div>

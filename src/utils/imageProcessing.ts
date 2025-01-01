@@ -3,12 +3,10 @@ import { generateImageTransform } from './colorScience/imageTransform';
 import { calculateExportBorderWidth } from './borderCalculation';
 
 export const downloadProcessedImage = async (imageUrl: string, recipe: Recipe) => {
-  // Create canvas and load image
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  // Load image
   const img = new Image();
   img.crossOrigin = 'anonymous';
   
@@ -53,15 +51,13 @@ export const downloadProcessedImage = async (imageUrl: string, recipe: Recipe) =
   const x = (canvas.width - targetWidth) / 2;
   const y = (canvas.height - targetHeight) / 2;
 
-  // Apply filters and draw image
-  ctx.filter = generateImageTransform(recipe);
+  // Apply filters with export-specific adjustments
+  ctx.filter = generateImageTransform(recipe, true);
   ctx.drawImage(img, 
-    // Source rectangle (for cropping)
     (img.width - targetWidth) / 2, 
     (img.height - targetHeight) / 2, 
     targetWidth, 
     targetHeight,
-    // Destination rectangle (with border offset)
     x, y, targetWidth, targetHeight
   );
 
@@ -74,7 +70,7 @@ export const downloadProcessedImage = async (imageUrl: string, recipe: Recipe) =
       grainCanvas.height = targetHeight;
       
       const imageData = grainCtx.createImageData(targetWidth, targetHeight);
-      const strength = recipe.grainEffect === 'Strong' ? 0.15 : 0.08;
+      const strength = recipe.grainEffect === 'Strong' ? 0.18 : 0.1; // Increased for export
       const size = recipe.grainSize === 'Large' ? 2 : 1;
       
       for (let i = 0; i < imageData.data.length; i += 4) {
@@ -91,7 +87,7 @@ export const downloadProcessedImage = async (imageUrl: string, recipe: Recipe) =
       
       grainCtx.putImageData(imageData, 0, 0);
       ctx.globalCompositeOperation = 'overlay';
-      ctx.globalAlpha = 0.4;
+      ctx.globalAlpha = 0.5; // Increased from 0.4 for export
       ctx.drawImage(grainCanvas, x, y);
     }
   }
@@ -100,7 +96,7 @@ export const downloadProcessedImage = async (imageUrl: string, recipe: Recipe) =
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
 
-  // Download the image
+  // Download with high quality
   const link = document.createElement('a');
   link.download = `${recipe.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
   link.href = canvas.toDataURL('image/jpeg', 0.95);
